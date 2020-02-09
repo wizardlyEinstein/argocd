@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      # 1. Define an emptyDir volume which will hold the custom binaries
+      volumes:
+        - name: custom-tools
+          emptyDir: {}
+        - name: sops
+          secret:
+            secretName: sops.json
+      # 2. Use an init container to download/copy custom binaries into the emptyDir
+      initContainers:
+        - name: install-goaboutsops
+          image: lelandsindt/goabout-kustomize-sopssecretgenerator:1.2.0 
+          command: ["/bin/sh", "-c"]
+          args:
+            - echo "Installing goabout kustomize sops...";
+              set -x;
+              mv -v /SopsSecretGenerator /custom-tools/SopsSecretGenerator;
+              set +x;
+              echo "Done.";
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+      # 3. Volume mount the custom binary to the bin directory (overriding the existing version)
+      containers:
+        - name: argocd-repo-server
+          volumeMounts:
+              # Verify this matches a XDG_CONFIG_HOME=/.config env variable
+            - mountPath: /.config/kustomize/plugin/goabout.com/v1beta1/sopssecretgenerator/SopsSecretGenerator
+              name: custom-tools
+              subPath: SopsSecretGenerator 
+            - mountPath: /.secrets/gcp/sops.json
+              name: sops
+              subPath: sops.enc.json.txt 
+          # 4. Set the XDG_CONFIG_HOME env variable to allow kustomize to detect the plugin
+          env:
+            - name: XDG_CONFIG_HOME
+              value: /.config
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /.secrets/gcp/sops.json
+  

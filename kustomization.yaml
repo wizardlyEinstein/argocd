@@ -1,0 +1,37 @@
+namespace: argocd
+
+resources:
+- argocd.yaml
+
+generators:
+- sops.yaml
+
+patchesStrategicMerge:
+- patch.yaml
+- |-
+  apiVersion: v1
+  kind: Service 
+  metadata:
+    name: argocd-server
+  spec:
+    type: LoadBalancer
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: argocd-cm
+  data:
+    kustomize.buildOptions: --enable_alpha_plugins
+
+patchesJSON6902:
+- target:
+    version: v1
+    kind: Service
+    name: argocd-server
+  patch: |-
+    - op: replace
+      path: /spec/ports/0/port
+      value: 9080
+    - op: replace
+      path: /spec/ports/1/port
+      value: 9443

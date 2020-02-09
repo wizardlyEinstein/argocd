@@ -1,0 +1,7 @@
+apiVersion: goabout.com/v1beta1
+kind: SopsSecretGenerator
+metadata:
+  name: sops.json 
+files: 
+- sops.enc.json.txt
+type: Opaque
