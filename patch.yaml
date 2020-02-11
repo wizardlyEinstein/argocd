@@ -15,17 +15,24 @@ spec:
       # 2. Use an init container to download/copy custom binaries into the emptyDir
       initContainers:
         - name: install-goaboutsops
-          image: lelandsindt/goabout-kustomize-sopssecretgenerator:1.2.0 
+          image: alpine:3.11.3
           command: ["/bin/sh", "-c"]
           args:
             - echo "Installing goabout kustomize sops...";
               set -x;
-              mv -v /SopsSecretGenerator /custom-tools/SopsSecretGenerator;
+              wget -O /SopsSecretGenerator https://github.com/goabout/kustomize-sopssecretgenerator/releases/download/v${VERSION}/SopsSecretGenerator_${VERSION}_${PLATFORM}_${ARCH};
               set +x;
               echo "Done.";
           volumeMounts:
             - mountPath: /custom-tools
               name: custom-tools
+          env:
+            - name: VERSION
+              value: 1.2.1
+            - name: PLATFORM
+              value: linux
+            - name: ARCH
+              value: amd64
       # 3. Volume mount the custom binary to the bin directory (overriding the existing version)
       containers:
         - name: argocd-repo-server
