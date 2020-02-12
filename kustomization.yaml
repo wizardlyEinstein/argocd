@@ -4,10 +4,11 @@ resources:
 - argocd.yaml
 
 generators:
-- sops.yaml
+- gcpServiceUser.yaml
 
 patchesStrategicMerge:
-- patch.yaml
+- sopssecretsgenerator.yaml
+- gcp.yaml
 - |-
   apiVersion: v1
   kind: Service 

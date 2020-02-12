@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      volumes:
+        - name: gcpserviceuser
+          secret:
+            secretName: gcpserviceuser.json
+      containers:
+        - name: argocd-repo-server
+          volumeMounts:
+            - mountPath: /.secrets/gcp/gcpServiceUser.json
+              name: gcpserviceuser
+              subPath: gcpServiceUser.json
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /.secrets/gcp/gcpServiceUser.json
