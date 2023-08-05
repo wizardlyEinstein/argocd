@@ -1,7 +1,7 @@
 namespace: argocd
 
 resources:
-- https://raw.githubusercontent.com/argoproj/argo-cd/v2.3.1/manifests/install.yaml 
+- https://raw.githubusercontent.com/argoproj/argo-cd/v2.7.10/manifests/install.yaml 
 
 generators:
 - gcpServiceUser.yaml
@@ -22,7 +22,7 @@ patchesStrategicMerge:
   metadata:
     name: argocd-cm
   data:
-    kustomize.buildOptions: --enable_alpha_plugins
+    kustomize.buildOptions: --enable-alpha-plugins
 
 patchesJSON6902:
 - target:
