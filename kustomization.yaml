@@ -1,7 +1,7 @@
 namespace: argocd
 
 resources:
-- https://raw.githubusercontent.com/argoproj/argo-cd/v3.1.1/manifests/install.yaml
+- https://raw.githubusercontent.com/argoproj/argo-cd/v3.1.4/manifests/install.yaml
 
 generators:
 - gcpServiceUser.yaml
